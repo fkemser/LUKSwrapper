@@ -1,0 +1,6 @@
+[submodule "lib/SHlib"]
+	path = lib/SHlib
+	url = https://github.com/fkemser/SHlib
+[submodule "lib/SHtemplateLIB"]
+	path = lib/SHtemplateLIB
+	url = https://github.com/fkemser/SHtemplateLIB
