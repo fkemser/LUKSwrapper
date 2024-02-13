@@ -1,7 +1,7 @@
 #!/bin/sh
 #
-# SPDX-FileCopyrightText: Copyright (c) <ABOUT_YEARS> <ABOUT_AUTHORS>
-# SPDX-License-Identifier: <ABOUT_LICENSE>
+# SPDX-FileCopyrightText: Copyright (c) 2022-2024 Florian Kemser and the LUKSwrapper contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
 #
 #===============================================================================
 #
@@ -55,19 +55,19 @@ readonly I_FILE_SH_INIT="${I_DIR_SRC}/init.sh"  # Initialisation Script
 #===============================================================================
 #  FILE / FOLDER STRUCTURE (CUSTOM)
 #===============================================================================
-#                     TODO: DEFINE YOUR FILES/FOLDERS HERE
+#                     DONE: DEFINE YOUR FILES/FOLDERS HERE
 #
 #                                      |||
 #                                     \|||/
 #                                      \|/
 #===============================================================================
-readonly I_FILE_SH_RUN="${I_DIR_SRC}/run.sh"
+readonly I_FILE_SH_LUKS="${I_DIR_SRC}/luks.sh"
 #===============================================================================
 #                                      /|\
 #                                     /|||\
 #                                      |||
 #
-#                     TODO: DEFINE YOUR FILES/FOLDERS HERE
+#                     DONE: DEFINE YOUR FILES/FOLDERS HERE
 #===============================================================================
 
 #===============================================================================
