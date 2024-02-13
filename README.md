@@ -37,7 +37,7 @@
 <h3 align="center">LUKSwrapper</h3>
 
   <p align="center">
-    A collection of shell scripts to interactively print and manage printers via command line.
+    A collection of shell scripts to setup and manage LUKS2-encrypted drives, either interactively or via command line.
     <br />
     <a href="https://github.com/fkemser/LUKSwrapper"><strong>Explore the docs »</strong></a>
     <br />
