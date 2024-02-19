@@ -72,7 +72,6 @@
             <li><a href="#debian">Debian</a></li>
           </ul>
         </li>
-        <li><a href="#os-settings">OS Settings</a></li>
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
@@ -94,11 +93,11 @@
 
 This project provides a `dialog`-based interface to
 
-- setup dm-crypt/LUKS2 encryption on hard drives and flash drives,
+- setup dm-crypt/LUKS2 encryption on hard disks and flash drives,
 - mount and unmount LUKS2 devices,
 - add and remove LUKS2 key slots (passphrases, FIDO2 devices, PKCS11 token, TPM2 chips),
 - backup and restore LUKS2 header,
-- clone flash drives.
+- clone drives.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

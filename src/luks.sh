@@ -32,10 +32,10 @@ readonly PIDLOCK_ENABLED="false"
 #===============================================================================
 #  INIT - DO NOT EDIT
 #===============================================================================
-#  Run repository initialisation script
+#  Run repository initialization script
 . "$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )/init.sh"              || \
 { printf "%s\n\n"                                                           \
-    "ERROR: Could not run the repository initialisation script './init.sh'. Aborting..." >&2
+    "ERROR: Could not run the repository initialization script './init.sh'. Aborting..." >&2
   return 1
 }
 
@@ -364,6 +364,12 @@ readonly FILE_SO_LIBTSS2_RC="libtss2-rc.so.0"
 #===============================================================================
 args_check() {
   #-----------------------------------------------------------------------------
+  #  DO NOT EDIT
+  #-----------------------------------------------------------------------------
+  # Check if selected action is compatible with the selected mode
+  lib_shtpl_arg_action_is_valid                                             && \
+
+  #-----------------------------------------------------------------------------
   #                        DONE: DEFINE YOUR CHECKS HERE
   #                   (DO NOT FORGET THE TERMINATING '|| \')
   #
@@ -377,18 +383,19 @@ args_check() {
   #-----------------------------------------------------------------------------
   #  arg_auth
   #-----------------------------------------------------------------------------
-  #  Get list of allowed authentication mechanisms
-  local arg_auth_list
-  arg_auth_list="$(lib_core_str_to --const "ARG_AUTH_LIST_${arg_action}")"
-  eval "arg_auth_list=\${${arg_auth_list}}"
+  { #  Get list of allowed authentication mechanisms
+    local arg_auth_list
+    arg_auth_list="$(lib_core_str_to --const "ARG_AUTH_LIST_${arg_action}")"
+    eval "arg_auth_list=\${${arg_auth_list}}"
 
-  #  In case action-specific list does not exist
-  arg_auth_list="${arg_auth_list:-${ARG_AUTH_LIST}}"
+    #  In case action-specific list does not exist
+    arg_auth_list="${arg_auth_list:-${ARG_AUTH_LIST}}"
 
-  #  Check if select mechanism <arg_auth> is part of allowed list <arg_auth_list>
-  { lib_core_list_contains_str_ptr                      \
-      "${arg_auth}" "${arg_auth_list}" " " "ARG_AUTH_"  || \
-    error "${TXT_ARG_AUTH_NOT_SUPPORTED}"
+    #  Check if select mechanism <arg_auth> is part of allowed list <arg_auth_list>
+    { lib_core_list_contains_str_ptr                      \
+        "${arg_auth}" "${arg_auth_list}" " " "ARG_AUTH_"  || \
+      error "${TXT_ARG_AUTH_NOT_SUPPORTED}"
+    }
   }                                                                         && \
 
   #-----------------------------------------------------------------------------
@@ -399,21 +406,28 @@ args_check() {
   #-----------------------------------------------------------------------------
   #  arg_device_src
   #-----------------------------------------------------------------------------
-  case "${arg_action}" in
-    ${ARG_ACTION_CLONE}|${ARG_ACTION_CLOSE}|${ARG_ACTION_ENCRYPT}|\
-    ${ARG_ACTION_ENROLL}|${ARG_ACTION_HEADER_BACKUP}|${ARG_ACTION_HEADER_INFO}|\
-    ${ARG_ACTION_HEADER_RESTORE}|${ARG_ACTION_OPEN}|${ARG_ACTION_REMOVE}|\
-    ${ARG_ACTION_REPLACE})
-      lib_core_is --blockdevice "${arg_device_src}"
-      ;;
-  esac                                                                      && \
+  { case "${arg_action}" in
+      ${ARG_ACTION_ENCRYPT})
+        lib_core_is --blockdevice "${arg_device_src}"
+        ;;
+      ${ARG_ACTION_CLONE}|${ARG_ACTION_CLOSE}|${ARG_ACTION_ENROLL}|\
+      ${ARG_ACTION_HEADER_BACKUP}|${ARG_ACTION_HEADER_INFO}|\
+      ${ARG_ACTION_HEADER_RESTORE}|${ARG_ACTION_OPEN}|${ARG_ACTION_REMOVE}|\
+      ${ARG_ACTION_REPLACE})
+        is_luks_device
+        ;;
+    esac || \
+    lib_shtpl_arg_error "arg_device_src" "ARG_ACTION_${arg_action}"
+  }                                                                         && \
 
   #-----------------------------------------------------------------------------
   #  arg_device_dst
   #-----------------------------------------------------------------------------
   case "${arg_action}" in
     ${ARG_ACTION_CLONE})
-      lib_core_is --blockdevice "${arg_device_dst}" && \
+      { lib_core_is --blockdevice "${arg_device_dst}" || \
+        lib_shtpl_arg_error "arg_device_dst" "ARG_ACTION_CLONE"
+      } && \
 
       #  Ensure that <arg_device_src> and <arg_device_dst> are not identical
       if [ "${arg_device_src}" = "${arg_device_dst}" ]; then
@@ -427,11 +441,13 @@ args_check() {
   #-----------------------------------------------------------------------------
   #  arg_fido2_device
   #-----------------------------------------------------------------------------
-  case "${arg_fido2_device}" in
-    ${ARG_FIDO2_DEVICE_AUTO}) ;;
-    /dev/hidraw*) lib_core_is --exists "${arg_fido2_device}";;
-    *) false;;
-  esac                                                                      && \
+  { case "${arg_fido2_device}" in
+      ${ARG_FIDO2_DEVICE_AUTO}) ;;
+      /dev/hidraw*) lib_core_is --exists "${arg_fido2_device}";;
+      *) false;;
+    esac || \
+    lib_shtpl_arg_error "arg_fido2_device"
+  }                                                                         && \
 
   #-----------------------------------------------------------------------------
   #  arg_filesystem
@@ -449,10 +465,12 @@ args_check() {
   case "${arg_action}" in
     ${ARG_ACTION_HEADER_BACKUP})
       touch -c "${arg_headerfile}" 2>/dev/null && \
-      ! lib_core_is --file "${arg_headerfile}"
+      ! lib_core_is --file "${arg_headerfile}" || \
+      lib_shtpl_arg_error "arg_headerfile" "ARG_ACTION_HEADER_BACKUP"
       ;;
     ${ARG_ACTION_HEADER_RESTORE})
-      lib_core_is --file "${arg_headerfile}"
+      lib_core_is --file "${arg_headerfile}" || \
+      lib_shtpl_arg_error "arg_headerfile" "ARG_ACTION_HEADER_RESTORE"
       ;;
   esac                                                                      && \
 
@@ -461,7 +479,8 @@ args_check() {
   #-----------------------------------------------------------------------------
   if lib_core_is --set "${arg_iter_time}"; then
     lib_math_is_within_range \
-      "${ARG_ITER_TIME_MIN}" "${arg_iter_time}" "${ARG_ITER_TIME_MAX}"
+      "${ARG_ITER_TIME_MIN}" "${arg_iter_time}" "${ARG_ITER_TIME_MAX}" || \
+    lib_shtpl_arg_error "arg_iter_time"
   fi                                                                        && \
 
   #-----------------------------------------------------------------------------
@@ -469,7 +488,8 @@ args_check() {
   #-----------------------------------------------------------------------------
   if lib_core_is --set "${arg_key_size}"; then
     lib_math_is_within_range \
-      "${ARG_KEY_SIZE_MIN}" "${arg_key_size}" "${ARG_KEY_SIZE_MAX}"
+      "${ARG_KEY_SIZE_MIN}" "${arg_key_size}" "${ARG_KEY_SIZE_MAX}" || \
+    lib_shtpl_arg_error "arg_key_size"
   fi                                                                        && \
 
   #-----------------------------------------------------------------------------
@@ -490,17 +510,20 @@ args_check() {
   #-----------------------------------------------------------------------------
   #  arg_tpm2_device
   #-----------------------------------------------------------------------------
-  case "${arg_tpm2_device}" in
-    ${ARG_TPM2_DEVICE_AUTO}) ;;
-    /dev/tpmrm*) lib_core_is --exists "${arg_tpm2_device}";;
-    *) false;;
-  esac                                                                      && \
+  { case "${arg_tpm2_device}" in
+      ${ARG_TPM2_DEVICE_AUTO}) ;;
+      /dev/tpmrm*) lib_core_is --exists "${arg_tpm2_device}";;
+      *) false;;
+    esac || \
+    lib_shtpl_arg_error "arg_tpm2_device"
+  }                                                                         && \
 
   #-----------------------------------------------------------------------------
   #  arg_tpm2_pcrs
   #-----------------------------------------------------------------------------
   if lib_core_is --set "${arg_tpm2_pcrs}"; then
-    lib_core_regex --luks2-tpm2-pcrs "${arg_tpm2_pcrs}"
+    lib_core_regex --luks2-tpm2-pcrs "${arg_tpm2_pcrs}" || \
+    lib_shtpl_arg_error "arg_tpm2_pcrs"
   fi                                                                        || \
   #-----------------------------------------------------------------------------
   #                                     /|\
@@ -665,7 +688,6 @@ args_read() {
         if [ $# -eq 1 ]; then
           #  Only one argument left
           arg_device_src="$1"
-          lib_core_is --blockdevice "${arg_device_src}"
         else
           #  More than one argument left
           #
@@ -1372,7 +1394,7 @@ init_lang() {
 
 #===  FUNCTION  ================================================================
 #         NAME:  init_update
-#  DESCRIPTION:  Update global variables/constants and perform initialisation
+#  DESCRIPTION:  Update global variables/constants and perform initialization
 #                commands that should be executed after argument parsing
 #      GLOBALS:  arg_cipher  arg_filesystem  arg_key_size  arg_mapper  arg_mount
 #      OUTPUTS:  An error message to <stderr> and/or <syslog>
@@ -1461,7 +1483,7 @@ main() {
   #   args_check        Check if passed arguments are valid
   #
   #   init_update       Update global variables/constants and perform
-  #                     initialisation commands that should be executed after
+  #                     initialization commands that should be executed after
   #                     argument parsing
   #
   #   init_check_post   Check script requirements (after argument parsing)
@@ -2136,7 +2158,6 @@ menu_main() {
 #===  FUNCTION  ================================================================
 #         NAME:  benchmark
 #  DESCRIPTION:  Run <cryptsetup> benchmark
-#todo: verschieben
 #===============================================================================
 benchmark() {
   # || true as the command always returns 1
@@ -2144,29 +2165,8 @@ benchmark() {
 }
 
 #===  FUNCTION  ================================================================
-#         NAME:  is_luks_device
-#  DESCRIPTION:  Check if <arg_device_src> is a LUKS device (0) or not (1)
-#todo: verschieben
-#===============================================================================
-is_luks_device() {
-  lib_core_sudo cryptsetup isLuks "${arg_device_src}"
-}
-
-#===  FUNCTION  ================================================================
-#         NAME:  show_drives
-#  DESCRIPTION:  List block devices
-#todo: verschieben
-#===============================================================================
-show_drives() {
-  lib_msg_print_heading -301 "lsblk (/dev/...)"
-  list_blk "all" "dialog-msgbox" "all"
-  printf "\n"
-}
-
-#===  FUNCTION  ================================================================
 #         NAME:  clone
 #  DESCRIPTION:  Clone LUKS device from <arg_device_src> to <arg_device_dst>
-#todo: evtl überarbeiten
 #===============================================================================
 clone() {
   local exitcode="0"
@@ -2383,6 +2383,14 @@ header_restore() {
   done
 
   return ${exitcode}
+}
+
+#===  FUNCTION  ================================================================
+#         NAME:  is_luks_device
+#  DESCRIPTION:  Check if <arg_device_src> is a LUKS device (0) or not (1)
+#===============================================================================
+is_luks_device() {
+  lib_core_sudo cryptsetup isLuks "${arg_device_src}"
 }
 
 #===  FUNCTION  ================================================================
@@ -2793,6 +2801,16 @@ replace() {
   done
 
   return ${exitcode}
+}
+
+#===  FUNCTION  ================================================================
+#         NAME:  show_drives
+#  DESCRIPTION:  List block devices
+#===============================================================================
+show_drives() {
+  lib_msg_print_heading -301 "lsblk (/dev/...)"
+  list_blk "all" "dialog-msgbox" "all"
+  printf "\n"
 }
 
 #===  FUNCTION  ================================================================
