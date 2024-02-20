@@ -377,13 +377,88 @@ args_check() {
   #                                    \|||/
   #                                     \|/
   #-----------------------------------------------------------------------------
-  # # For more available checks, please have a look at the functions
-  # # <lib_core_is()> and <lib_core_regex()> in '/lib/shlib/lib/core.lib.sh'
+  # For more available checks, please have a look at the functions
+  # <lib_core_is()> and <lib_core_regex()> in '/lib/shlib/lib/core.lib.sh'
+
+  #-----------------------------------------------------------------------------
+  #  Mandatory arguments (daemon/script mode only)
+  #-----------------------------------------------------------------------------
+  #  Some args are not listed here as <init_update()> sets their default values.
+  #-----------------------------------------------------------------------------
+  if  [ "${arg_mode}" = "${ARG_MODE_DAEMON}" ] || \
+      [ "${arg_mode}" = "${ARG_MODE_SCRIPT}" ]; then
+    case "${arg_action}" in
+      ${ARG_ACTION_BENCHMARK})
+        ;;
+      ${ARG_ACTION_CLONE})
+        lib_shtpl_arg_is_set "arg_device_dst" "arg_device_src"
+        ;;
+      ${ARG_ACTION_CLOSE})
+        lib_shtpl_arg_is_set "arg_device_src"
+        ;;
+      ${ARG_ACTION_ENCRYPT})
+        lib_shtpl_arg_is_set "arg_device_src" "arg_hash" "arg_iter_time"
+        ;;
+      ${ARG_ACTION_ENROLL})
+        lib_shtpl_arg_is_set "arg_auth" "arg_device_src"
+        ;;
+      ${ARG_ACTION_HEADER_BACKUP})
+        lib_shtpl_arg_is_set "arg_device_src" "arg_headerfile"
+        ;;
+      ${ARG_ACTION_HEADER_INFO})
+        lib_shtpl_arg_is_set "arg_device_src"
+        ;;
+      ${ARG_ACTION_HEADER_RESTORE})
+        lib_shtpl_arg_is_set "arg_device_src" "arg_headerfile"
+        ;;
+      ${ARG_ACTION_IS_LUKS_DEVICE})
+        lib_shtpl_arg_is_set "arg_device_src"
+        ;;
+      ${ARG_ACTION_LIST_TOKEN})
+        lib_shtpl_arg_is_set "arg_auth"
+        ;;
+      ${ARG_ACTION_OPEN})
+        lib_shtpl_arg_is_set "arg_auth" "arg_device_src"
+        ;;
+      ${ARG_ACTION_REMOVE})
+        lib_shtpl_arg_is_set "arg_auth" "arg_device_src"
+        ;;
+      ${ARG_ACTION_REPLACE})
+        lib_shtpl_arg_is_set "arg_auth" "arg_device_src"
+        ;;
+      ${ARG_ACTION_SHOW_DRIVES})
+        ;;
+    esac                                                              && \
+
+    case "${arg_action}" in
+      ${ARG_ACTION_ENROLL}|${ARG_ACTION_OPEN}|${ARG_ACTION_REPLACE})
+        case "${arg_auth}" in
+          ${ARG_AUTH_FIDO2})  lib_shtpl_arg_is_set "arg_fido2_device" ;;
+          ${ARG_AUTH_PKCS11}) lib_shtpl_arg_is_set "arg_pkcs11_token_uri" ;;
+          ${ARG_AUTH_TPM2})   lib_shtpl_arg_is_set "arg_tpm2_device" ;;
+        esac
+        ;;
+    esac                                                              && \
+
+    case "${arg_action}" in
+      ${ARG_ACTION_ENROLL}|${ARG_ACTION_REPLACE})
+        case "${arg_auth}" in
+          ${ARG_AUTH_FIDO2})
+            lib_shtpl_arg_is_set "arg_with_pin"
+            ;;
+          ${ARG_AUTH_TPM2})
+            lib_shtpl_arg_is_set "arg_tpm2_pcrs" "arg_with_pin"
+            ;;
+        esac
+        ;;
+    esac
+  fi                                                                        && \
 
   #-----------------------------------------------------------------------------
   #  arg_auth
   #-----------------------------------------------------------------------------
-  { #  Get list of allowed authentication mechanisms
+  if lib_core_is --set "${arg_auth}"; then
+    #  Get list of allowed authentication mechanisms
     local arg_auth_list
     arg_auth_list="$(lib_core_str_to --const "ARG_AUTH_LIST_${arg_action}")"
     eval "arg_auth_list=\${${arg_auth_list}}"
@@ -396,7 +471,7 @@ args_check() {
         "${arg_auth}" "${arg_auth_list}" " " "ARG_AUTH_"  || \
       error "${TXT_ARG_AUTH_NOT_SUPPORTED}"
     }
-  }                                                                         && \
+  fi                                                                        && \
 
   #-----------------------------------------------------------------------------
   #  arg_cipher
@@ -406,7 +481,8 @@ args_check() {
   #-----------------------------------------------------------------------------
   #  arg_device_src
   #-----------------------------------------------------------------------------
-  { case "${arg_action}" in
+  if lib_core_is --set "${arg_device_src}"; then
+    case "${arg_action}" in
       ${ARG_ACTION_ENCRYPT})
         lib_core_is --blockdevice "${arg_device_src}"
         ;;
@@ -418,36 +494,39 @@ args_check() {
         ;;
     esac || \
     lib_shtpl_arg_error "arg_device_src" "ARG_ACTION_${arg_action}"
-  }                                                                         && \
+  fi                                                                        && \
 
   #-----------------------------------------------------------------------------
   #  arg_device_dst
   #-----------------------------------------------------------------------------
-  case "${arg_action}" in
-    ${ARG_ACTION_CLONE})
-      { lib_core_is --blockdevice "${arg_device_dst}" || \
-        lib_shtpl_arg_error "arg_device_dst" "ARG_ACTION_CLONE"
-      } && \
+  if lib_core_is --set "${arg_device_dst}"; then
+    case "${arg_action}" in
+      ${ARG_ACTION_CLONE})
+        { lib_core_is --blockdevice "${arg_device_dst}" || \
+          lib_shtpl_arg_error "arg_device_dst" "ARG_ACTION_CLONE"
+        } && \
 
-      #  Ensure that <arg_device_src> and <arg_device_dst> are not identical
-      if [ "${arg_device_src}" = "${arg_device_dst}" ]; then
-        lib_msg_echo --error "${TXT_ERROR_IDENTICAL_DEVS}" "false" "" \
-          "device_src" "${arg_device_src}"                            \
-          "device_dst" "${arg_device_dst}"
-      fi
-      ;;
-  esac                                                                      && \
+        #  Ensure that <arg_device_src> and <arg_device_dst> are not identical
+        if [ "${arg_device_src}" = "${arg_device_dst}" ]; then
+          lib_msg_echo --error "${TXT_ERROR_IDENTICAL_DEVS}" "false" "" \
+            "device_src" "${arg_device_src}"                            \
+            "device_dst" "${arg_device_dst}"
+        fi
+        ;;
+    esac
+  fi                                                                        && \
 
   #-----------------------------------------------------------------------------
   #  arg_fido2_device
   #-----------------------------------------------------------------------------
-  { case "${arg_fido2_device}" in
+  if lib_core_is --set "${arg_fido2_device}"; then
+    case "${arg_fido2_device}" in
       ${ARG_FIDO2_DEVICE_AUTO}) ;;
       /dev/hidraw*) lib_core_is --exists "${arg_fido2_device}";;
       *) false;;
     esac || \
     lib_shtpl_arg_error "arg_fido2_device"
-  }                                                                         && \
+  fi                                                                        && \
 
   #-----------------------------------------------------------------------------
   #  arg_filesystem
@@ -462,17 +541,19 @@ args_check() {
   #-----------------------------------------------------------------------------
   #  arg_headerfile
   #-----------------------------------------------------------------------------
-  case "${arg_action}" in
-    ${ARG_ACTION_HEADER_BACKUP})
-      touch -c "${arg_headerfile}" 2>/dev/null && \
-      ! lib_core_is --file "${arg_headerfile}" || \
-      lib_shtpl_arg_error "arg_headerfile" "ARG_ACTION_HEADER_BACKUP"
-      ;;
-    ${ARG_ACTION_HEADER_RESTORE})
-      lib_core_is --file "${arg_headerfile}" || \
-      lib_shtpl_arg_error "arg_headerfile" "ARG_ACTION_HEADER_RESTORE"
-      ;;
-  esac                                                                      && \
+  if lib_core_is --set "${arg_headerfile}"; then
+    case "${arg_action}" in
+      ${ARG_ACTION_HEADER_BACKUP})
+        touch -c "${arg_headerfile}" 2>/dev/null && \
+        ! lib_core_is --file "${arg_headerfile}" || \
+        lib_shtpl_arg_error "arg_headerfile" "ARG_ACTION_HEADER_BACKUP"
+        ;;
+      ${ARG_ACTION_HEADER_RESTORE})
+        lib_core_is --file "${arg_headerfile}" || \
+        lib_shtpl_arg_error "arg_headerfile" "ARG_ACTION_HEADER_RESTORE"
+        ;;
+    esac
+  fi                                                                        && \
 
   #-----------------------------------------------------------------------------
   #  arg_iter_time
@@ -508,15 +589,23 @@ args_check() {
   true && \
 
   #-----------------------------------------------------------------------------
+  #  arg_with_pin
+  #-----------------------------------------------------------------------------
+  if lib_core_is --set "${arg_with_pin}"; then
+    lib_core_is --bool "${arg_with_pin}"
+  fi                                                                        && \
+
+  #-----------------------------------------------------------------------------
   #  arg_tpm2_device
   #-----------------------------------------------------------------------------
-  { case "${arg_tpm2_device}" in
+  if lib_core_is --set "${arg_tpm2_device}"; then
+    case "${arg_tpm2_device}" in
       ${ARG_TPM2_DEVICE_AUTO}) ;;
       /dev/tpmrm*) lib_core_is --exists "${arg_tpm2_device}";;
       *) false;;
     esac || \
     lib_shtpl_arg_error "arg_tpm2_device"
-  }                                                                         && \
+  fi                                                                        && \
 
   #-----------------------------------------------------------------------------
   #  arg_tpm2_pcrs
@@ -598,16 +687,16 @@ args_read() {
       #-------------------------------------------------------------------------
       #  Script actions <ARG_ACTION_...>
       #  (all actions that do not expect any arguments)
-      --${ARG_ACTION_BENCHMARK}|--${ARG_ACTION_ENROLL}|\
-      --${ARG_ACTION_IS_LUKS_DEVICE}|--${ARG_ACTION_SHOW_DRIVES})
+      --${ARG_ACTION_BENCHMARK}|--${ARG_ACTION_IS_LUKS_DEVICE}|\
+      --${ARG_ACTION_SHOW_DRIVES})
         arg_action="${1#--}"
         ;;
 
       #  Script actions <ARG_ACTION_...>
       #  (all actions that expect one (1) argument)
-      --${ARG_ACTION_CLOSE}|--${ARG_ACTION_ENCRYPT}|\
-      --${ARG_ACTION_HEADER_INFO}|--${ARG_ACTION_OPEN}|\
-      --${ARG_ACTION_REMOVE}|--${ARG_ACTION_REPLACE})
+      --${ARG_ACTION_CLOSE}|--${ARG_ACTION_ENCRYPT}|--${ARG_ACTION_ENROLL}|\
+      --${ARG_ACTION_HEADER_INFO}|--${ARG_ACTION_OPEN}|--${ARG_ACTION_REMOVE}|\
+      --${ARG_ACTION_REPLACE})
         arg_action="${1#--}"
         arg_device_src="$2"
         [ $# -ge 1 ] && { shift; }
