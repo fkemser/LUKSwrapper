@@ -377,13 +377,12 @@ args_check() {
   #                                    \|||/
   #                                     \|/
   #-----------------------------------------------------------------------------
-  # For more available checks, please have a look at the functions
-  # <lib_core_is()> and <lib_core_regex()> in '/lib/shlib/lib/core.lib.sh'
 
   #-----------------------------------------------------------------------------
-  #  Mandatory arguments (daemon/script mode only)
+  #  Check if mandatory arguments are set (daemon / script mode only)
   #-----------------------------------------------------------------------------
-  #  Some args are not listed here as <init_update()> sets their default values.
+  #  Some arguments may not be listed here as <init_update()> may set their
+  #  default values.
   #-----------------------------------------------------------------------------
   if  [ "${arg_mode}" = "${ARG_MODE_DAEMON}" ] || \
       [ "${arg_mode}" = "${ARG_MODE_SCRIPT}" ]; then
@@ -454,6 +453,12 @@ args_check() {
     esac
   fi                                                                        && \
 
+  #-----------------------------------------------------------------------------
+  #  Check argument types / value ranges
+  #-----------------------------------------------------------------------------
+  #  For more available checks, please have a look at the functions
+  #  <lib_core_is()> and <lib_core_regex()> in '/lib/SHlib/lib/core.lib.sh'
+  #-----------------------------------------------------------------------------
   #-----------------------------------------------------------------------------
   #  arg_auth
   #-----------------------------------------------------------------------------
@@ -2592,7 +2597,7 @@ list_blk() {
       done
       IFS="$OLDIFS"
 
-      lib_core_is --notempty "${out_devs}" && \
+      lib_core_is --set "${out_devs}" && \
       printf "%s${out_header:+\n}%s" "${out_header}" "${out_devs}"
       ;;
 
@@ -2922,7 +2927,7 @@ unmount() {
           mapper="$(printf "%s" "${line}" | cut -d' ' -f2)"
           mountpoint="$(printf "%s" "${line}" | cut -d' ' -f3-)"
 
-          if lib_core_is --notempty "${mountpoint}"; then
+          if lib_core_is --set "${mountpoint}"; then
             lib_core_echo "true" "true"                             \
               "${TXT_UNMOUNT_INFO_UNMOUNTING} <${mountpoint}> ..."  && \
             lib_core_sudo umount "${mountpoint}"                    && \
@@ -3011,7 +3016,7 @@ menu_arg_auth() {
         printf "%s\n%s\n" "${tag}" "${item}"
       done)"                                                                && \
     IFS="${LIB_C_STR_NEWLINE}"                                              && \
-    lib_core_is --notempty "${dlgpairs}"                                    && \
+    lib_core_is --set "${dlgpairs}"                                         && \
     result="$(dialog --title "${title}" --menu "${text}" 0 0 0  \
       ${dlgpairs} 2>&1 1>&3)"                                               || \
     exitcode="$?"
@@ -3118,7 +3123,7 @@ menu_arg_device_dst() {
           item="${name} (${size})${serial:+ (${serial})}"
           printf "%s\n%s\n" "${tag}" "${item}"
         done)"                                                              && \
-      lib_core_is --notempty "${lsblk_menu}"                                && \
+      lib_core_is --set "${lsblk_menu}"                                     && \
       result="$(dialog --extra-button --extra-label "${extra}"  \
         --title "${title1}" --menu "${text1}" 0 0 0             \
         ${lsblk_menu} 2>&1 1>&3)"                                           || \
@@ -3256,7 +3261,7 @@ menu_arg_device_src() {
           item="${name} (${size})${serial:+ (${serial})}"
           printf "%s\n%s\n" "${tag}" "${item}"
         done)"                                                              && \
-      lib_core_is --notempty "${lsblk_menu}"                                && \
+      lib_core_is --set "${lsblk_menu}"                                     && \
       result="$(dialog --extra-button --extra-label "${extra}"  \
         --title "${title1}" --menu "${text1}" 0 0 0             \
         ${lsblk_menu} 2>&1 1>&3)"                                           || \
@@ -3334,7 +3339,7 @@ menu_arg_fido2_device() {
             item="$(printf "%s" "$a" | cut -d' ' -f2- | tr -s ' ')"
             printf "%s\n%s\n" "${tag}" "${item}"
           done)"                                                      && \
-        ( lib_core_is --notempty "${dlgpairs}" || exit 2 )            && \
+        ( lib_core_is --set "${dlgpairs}" || exit 9 )                 && \
         result="$(dialog --title "${title1}" --menu "${text2}" 0 0 0  \
           ${dlgpairs} 2>&1 1>&3)"
         ;;
@@ -3342,8 +3347,12 @@ menu_arg_fido2_device() {
     exitcode="$?"
 
     case "${exitcode}" in
-      0|1) ;; # '1' = cancel button
-      *) dialog  --no-collapse --title "${title3}" --msgbox "${text3}" 0 0 ;;
+      9)
+        # Show error message if job list is empty (see 'exit 9' above)
+        dialog  --no-collapse --title "${title3}" --msgbox "${text3}" 0 0
+        ;;
+      *)
+        ;;
     esac
   exec 3>&-
 
@@ -3615,7 +3624,7 @@ menu_arg_pkcs11_token_uri() {
             item="$(printf "%s" "$a" | cut -d' ' -f2- | tr -s ' ')"
             printf "%s\n%s\n" "${tag}" "${item}"
           done)"                                                      && \
-        ( lib_core_is --notempty "${dlgpairs}" || exit 2 )            && \
+        ( lib_core_is --set "${dlgpairs}" || exit 9 )                 && \
         result="$(dialog --title "${title1}" --menu "${text2}" 0 0 0  \
           ${dlgpairs} 2>&1 1>&3)"
         ;;
@@ -3623,8 +3632,12 @@ menu_arg_pkcs11_token_uri() {
     exitcode="$?"
 
     case "${exitcode}" in
-      0|1) ;; # '1' = cancel button
-      *) dialog  --no-collapse --title "${title3}" --msgbox "${text3}" 0 0 ;;
+      9)
+        # Show error message if job list is empty (see 'exit 9' above)
+        dialog  --no-collapse --title "${title3}" --msgbox "${text3}" 0 0
+        ;;
+      *)
+        ;;
     esac
   exec 3>&-
 
@@ -3685,7 +3698,7 @@ menu_arg_tpm2_device() {
             item="$(printf "%s" "$a" | cut -d' ' -f2- | tr -s ' ')"
             printf "%s\n%s\n" "${tag}" "${item}"
           done)"                                                      && \
-        ( lib_core_is --notempty "${dlgpairs}" || exit 2 )            && \
+        ( lib_core_is --set "${dlgpairs}" || exit 9 )                 && \
         result="$(dialog --title "${title1}" --menu "${text2}" 0 0 0  \
           ${dlgpairs} 2>&1 1>&3)"
         ;;
@@ -3693,8 +3706,12 @@ menu_arg_tpm2_device() {
     exitcode="$?"
 
     case "${exitcode}" in
-      0|1) ;; # '1' = cancel button
-      *) dialog  --no-collapse --title "${title3}" --msgbox "${text3}" 0 0 ;;
+      9)
+        # Show error message if job list is empty (see 'exit 9' above)
+        dialog  --no-collapse --title "${title3}" --msgbox "${text3}" 0 0
+        ;;
+      *)
+        ;;
     esac
   exec 3>&-
 

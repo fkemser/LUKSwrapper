@@ -27,7 +27,7 @@
 #===============================================================================
 #  CHECK IF SCRIPT WAS PREVIOUSLY RUN
 #===============================================================================
-if ${I_INITIALISED:-false} 2>/dev/null; then return; fi
+if ${I_INITIALIZED:-false} 2>/dev/null; then return; fi
 
 #===============================================================================
 #  FILE / FOLDER STRUCTURE (TEMPLATE) - DO NOT EDIT
@@ -109,7 +109,7 @@ done
 lib_core_env_append "PATH" "/sbin" "/usr/sbin"                              && \
 
 # Initialization completed
-readonly I_INITIALISED="true"                                               || \
+readonly I_INITIALIZED="true"                                               || \
 
 # Break if an error occurs
 return
