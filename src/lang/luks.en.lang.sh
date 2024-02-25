@@ -214,7 +214,7 @@ readonly L_LUKS_EN_HLP_DES_ARG_PKCS11_TOKEN_URI_MANUAL="Manually, by specifying 
 #-------------------------------------------------------------------------------
 #  arg_tpm2_device
 #-------------------------------------------------------------------------------
-readonly L_LUKS_EN_DLG_TTL_ARG_TPM2_DEVICE_1="${L_LUKS_DLG_TTL_ARG_TPM2_DEVICE_EN_1}"
+readonly L_LUKS_EN_DLG_TTL_ARG_TPM2_DEVICE_1="TPM2 Security Chip (Device)"
 readonly L_LUKS_EN_DLG_TTL_ARG_TPM2_DEVICE_3="${LIB_SHTPL_EN_DLG_TTL_ERROR}"
 
 readonly L_LUKS_EN_DLG_TXT_ARG_TPM2_DEVICE_1="How shall the TMP2 chip be added/removed?"

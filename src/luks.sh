@@ -384,8 +384,16 @@ args_check() {
   #  Some arguments may not be listed here as <init_update()> may set their
   #  default values.
   #-----------------------------------------------------------------------------
-  if  [ "${arg_mode}" = "${ARG_MODE_DAEMON}" ] || \
-      [ "${arg_mode}" = "${ARG_MODE_SCRIPT}" ]; then
+  if    [ "${arg_action}" != "${ARG_ACTION_HELP}" ] && \
+        [ "${arg_mode}" = "${ARG_MODE_DAEMON}" ]; then
+
+    # Daemon mode
+    true
+
+  elif  [ "${arg_action}" != "${ARG_ACTION_HELP}" ] && \
+        [ "${arg_mode}" = "${ARG_MODE_SCRIPT}" ]; then
+
+    # Script mode
     case "${arg_action}" in
       ${ARG_ACTION_BENCHMARK})
         ;;
@@ -451,6 +459,7 @@ args_check() {
         esac
         ;;
     esac
+
   fi                                                                        && \
 
   #-----------------------------------------------------------------------------
@@ -527,8 +536,8 @@ args_check() {
   if lib_core_is --set "${arg_fido2_device}"; then
     case "${arg_fido2_device}" in
       ${ARG_FIDO2_DEVICE_AUTO}) ;;
-      /dev/hidraw*) lib_core_is --exists "${arg_fido2_device}";;
-      *) false;;
+      /dev/hidraw*) lib_core_is --exists "${arg_fido2_device}" ;;
+      *) false ;;
     esac || \
     lib_shtpl_arg_error "arg_fido2_device"
   fi                                                                        && \
@@ -606,8 +615,8 @@ args_check() {
   if lib_core_is --set "${arg_tpm2_device}"; then
     case "${arg_tpm2_device}" in
       ${ARG_TPM2_DEVICE_AUTO}) ;;
-      /dev/tpmrm*) lib_core_is --exists "${arg_tpm2_device}";;
-      *) false;;
+      /dev/tpmrm*) lib_core_is --exists "${arg_tpm2_device}" ;;
+      *) false ;;
     esac || \
     lib_shtpl_arg_error "arg_tpm2_device"
   fi                                                                        && \
@@ -672,7 +681,7 @@ args_read() {
       #  PARAMETER (TEMPLATE)
       #-------------------------------------------------------------------------
       #  Script actions <ARG_ACTION_...>
-      -h|--help) arg_action="${ARG_ACTION_HELP}"; break;;
+      -h|--help) arg_action="${ARG_ACTION_HELP}"; break ;;
 
       #  Script operation modes <ARG_MODE_...>
       --submenu)
@@ -740,23 +749,23 @@ args_read() {
       #  DONE: Please make sure that the command line options set here match
       #        the ones set in '/src/lang/run.0.lang.sh' (<L_RUN_HLP_PAR_ARG_...>).
       #  See 'man cryptsetup'
-      -c|--cipher)        arg_cipher="$2"; [ $# -ge 1 ] && { shift; };;
-      --hash)             arg_hash="$2"; [ $# -ge 1 ] && { shift; };;
-      -i|--iter-time)     arg_iter_time="$2"; [ $# -ge 1 ] && { shift; };;
-      -s|--key-size)      arg_key_size="$2"; [ $# -ge 1 ] && { shift; };;
+      -c|--cipher)        arg_cipher="$2"; [ $# -ge 1 ] && { shift; } ;;
+      --hash)             arg_hash="$2"; [ $# -ge 1 ] && { shift; } ;;
+      -i|--iter-time)     arg_iter_time="$2"; [ $# -ge 1 ] && { shift; } ;;
+      -s|--key-size)      arg_key_size="$2"; [ $# -ge 1 ] && { shift; } ;;
       #  Other
-      --auth)             arg_auth="$2"; [ $# -ge 1 ] && { shift; };;
-      --fido2-device)     arg_fido2_device="$2"; [ $# -ge 1 ] && { shift; };;
-      --filesystem)       arg_filesystem="$2"; [ $# -ge 1 ] && { shift; };;
-      --mapper)           arg_mapper="$2"; [ $# -ge 1 ] && { shift; };;
+      --auth)             arg_auth="$2"; [ $# -ge 1 ] && { shift; } ;;
+      --fido2-device)     arg_fido2_device="$2"; [ $# -ge 1 ] && { shift; } ;;
+      --filesystem)       arg_filesystem="$2"; [ $# -ge 1 ] && { shift; } ;;
+      --mapper)           arg_mapper="$2"; [ $# -ge 1 ] && { shift; } ;;
       --mount)
         if [ -n "$2" ]; then arg_mount="$2"; mount="true"; else mount="false"; fi
         [ $# -ge 1 ] && { shift; }
         ;;
-      --no-pin|--nopin)   arg_with_pin="false";;
-      --pkcs11-token-uri) arg_pkcs11_token_uri="$2"; [ $# -ge 1 ] && { shift; };;
-      --tpm2-device)      arg_tpm2_device="$2"; [ $# -ge 1 ] && { shift; };;
-      --tpm2-pcrs)        arg_tpm2_pcrs="$2"; [ $# -ge 1 ] && { shift; };;
+      --no-pin|--nopin)   arg_with_pin="false" ;;
+      --pkcs11-token-uri) arg_pkcs11_token_uri="$2"; [ $# -ge 1 ] && { shift; } ;;
+      --tpm2-device)      arg_tpm2_device="$2"; [ $# -ge 1 ] && { shift; } ;;
+      --tpm2-pcrs)        arg_tpm2_pcrs="$2"; [ $# -ge 1 ] && { shift; } ;;
       #-------------------------------------------------------------------------
       #                                   /|\
       #                                  /|||\
@@ -1407,9 +1416,9 @@ init_lang() {
   #                                     \|/
   #-----------------------------------------------------------------------------
   case "${ID_LANG}" in
-    ${LIB_C_ID_LANG_EN}) readonly ID_LANG="${LIB_C_ID_L_EN}";;
-    ${LIB_C_ID_LANG_DE}) readonly ID_LANG="${LIB_C_ID_L_DE}";;
-    *) readonly ID_LANG="${LIB_C_ID_L_EN}";;
+    ${LIB_C_ID_LANG_EN}) readonly ID_LANG="${LIB_C_ID_L_EN}" ;;
+    ${LIB_C_ID_LANG_DE}) readonly ID_LANG="${LIB_C_ID_L_DE}" ;;
+    *) readonly ID_LANG="${LIB_C_ID_L_EN}" ;;
   esac
   #-----------------------------------------------------------------------------
   #                                     /|\
@@ -1609,9 +1618,9 @@ main() {
 
   # Run mode-specific subfunctions
   case "${arg_mode}" in
-    ${ARG_MODE_DAEMON}) main_daemon;;
-    ${ARG_MODE_INTERACTIVE}|${ARG_MODE_INTERACTIVE_SUBMENU}) main_interactive || return $?;;
-    ${ARG_MODE_SCRIPT}) main_script;;
+    ${ARG_MODE_DAEMON}) main_daemon ;;
+    ${ARG_MODE_INTERACTIVE}|${ARG_MODE_INTERACTIVE_SUBMENU}) main_interactive || return $? ;;
+    ${ARG_MODE_SCRIPT}) main_script ;;
   esac
 }
 
@@ -1791,9 +1800,9 @@ run() {
     #---------------------------------------------------------------------------
     #  TEMPLATE - DO NOT EDIT
     #---------------------------------------------------------------------------
-    ${ARG_ACTION_ABOUT})        lib_shtpl_about --dialog;;
-    ${ARG_ACTION_EXIT})         clear; exit;;
-    ${ARG_ACTION_HELP})         help;;
+    ${ARG_ACTION_ABOUT})        lib_shtpl_about --dialog ;;
+    ${ARG_ACTION_EXIT})         clear; exit ;;
+    ${ARG_ACTION_HELP})         help ;;
 
     #---------------------------------------------------------------------------
     #  CUSTOM
@@ -2000,8 +2009,8 @@ trap_main() {
     # as they may run in background (asynchronously).
     local sub_signal
     case "${arg_signal}" in
-      INT|QUIT) sub_signal="TERM";;
-      *)        sub_signal="${arg_signal}";;
+      INT|QUIT) sub_signal="TERM" ;;
+      *)        sub_signal="${arg_signal}" ;;
     esac
 
     # Kill subshells / child processes
@@ -2033,11 +2042,11 @@ trap_main() {
   case "${arg_signal}" in
     EXIT)
       # ... EXIT
-      exit;;
+      exit ;;
     *)
       # ... other signals:
       # Clear EXIT trap handling, otherwise <trap_main()> would run again.
-      trap - EXIT; exit 1;;
+      trap - EXIT; exit 1 ;;
   esac
 }
 
@@ -2119,7 +2128,7 @@ menu_main() {
 
   #  Default actions do not depend on any further parameter
   case "${arg_action}" in
-    ${ARG_ACTION_ABOUT}|${ARG_ACTION_EXIT}|${ARG_ACTION_HELP}) return;;
+    ${ARG_ACTION_ABOUT}|${ARG_ACTION_EXIT}|${ARG_ACTION_HELP}) return ;;
   esac                                                                      && \
   #-----------------------------------------------------------------------------
   #                    DONE: DEFINE YOUR MENU HANDLING HERE
@@ -2172,9 +2181,9 @@ menu_main() {
   case "${arg_action}" in
     ${ARG_ACTION_ENROLL}|${ARG_ACTION_OPEN}|${ARG_ACTION_REPLACE})
       case "${arg_auth}" in
-        ${ARG_AUTH_FIDO2})  menu_arg_fido2_device;;
-        ${ARG_AUTH_PKCS11}) menu_arg_pkcs11_token_uri;;
-        ${ARG_AUTH_TPM2})   menu_arg_tpm2_device;;
+        ${ARG_AUTH_FIDO2})  menu_arg_fido2_device ;;
+        ${ARG_AUTH_PKCS11}) menu_arg_pkcs11_token_uri ;;
+        ${ARG_AUTH_TPM2})   menu_arg_tpm2_device ;;
       esac
       ;;
   esac                                                                      && \
@@ -2185,8 +2194,8 @@ menu_main() {
   case "${arg_action}" in
     ${ARG_ACTION_ENROLL}|${ARG_ACTION_REPLACE})
       case "${arg_auth}" in
-        ${ARG_AUTH_FIDO2})  menu_arg_with_pin;;
-        ${ARG_AUTH_TPM2})   menu_arg_tpm2_pcrs && menu_arg_with_pin;;
+        ${ARG_AUTH_FIDO2})  menu_arg_with_pin ;;
+        ${ARG_AUTH_TPM2})   menu_arg_tpm2_pcrs && menu_arg_with_pin ;;
       esac
       ;;
   esac                                                                      && \
@@ -2552,7 +2561,7 @@ list_blk() {
       esac
       ;;
 
-    *) return 1;;
+    *) return 1 ;;
   esac                                                                      && \
 
   case "${arg_filter}" in
@@ -2567,7 +2576,7 @@ list_blk() {
       local out_devs
 
       case "${arg_out}" in
-        ${ARG_OUT_DLG_MENU}) column_dev="2";;
+        ${ARG_OUT_DLG_MENU}) column_dev="2" ;;
         ${ARG_OUT_DLG_MSGBOX})
           column_dev="1"
           out_header="$(printf "%s" "${in_lsblk}" | head -n 1)"
@@ -2576,8 +2585,8 @@ list_blk() {
       esac
 
       case "${arg_filter}" in
-        ${ARG_FILTER_NOT_MOUNTED}) filter_mounted="false";;
-        ${ARG_FILTER_MOUNTED})     filter_mounted="true";;
+        ${ARG_FILTER_NOT_MOUNTED}) filter_mounted="false" ;;
+        ${ARG_FILTER_MOUNTED})     filter_mounted="true" ;;
       esac
 
       local OLDIFS="$IFS"
@@ -2601,7 +2610,7 @@ list_blk() {
       printf "%s${out_header:+\n}%s" "${out_header}" "${out_devs}"
       ;;
 
-    *) return 1;;
+    *) return 1 ;;
   esac
 }
 
@@ -3015,8 +3024,8 @@ menu_arg_auth() {
         eval "item=\${L_LUKS_${ID_LANG}_DLG_ITM_ARG_AUTH_${a}}"
         printf "%s\n%s\n" "${tag}" "${item}"
       done)"                                                                && \
-    IFS="${LIB_C_STR_NEWLINE}"                                              && \
     lib_core_is --set "${dlgpairs}"                                         && \
+    IFS="${LIB_C_STR_NEWLINE}"                                              && \
     result="$(dialog --title "${title}" --menu "${text}" 0 0 0  \
       ${dlgpairs} 2>&1 1>&3)"                                               || \
     exitcode="$?"
@@ -3143,7 +3152,7 @@ menu_arg_device_dst() {
           ;;
         *)
           # 'dialog' interrupted => Break
-          break;;
+          break ;;
       esac
     done
   exec 3>&-
@@ -3279,7 +3288,7 @@ menu_arg_device_src() {
           ;;
         *)
           # 'dialog' interrupted => Break
-          break;;
+          break ;;
       esac
     done
   exec 3>&-
@@ -3333,27 +3342,28 @@ menu_arg_fido2_device() {
         #     printf "%s\n%s\n" "${tag}" "${item}"
         #   done)"                                                      && \
 
-        dlgpairs="$(for a in \
-          $("${cmd_systemd_cryptenroll}" --fido2-device=list 2>/dev/null | tail +2); do
+        # Get list of FIDO2 token
+        { dlgpairs="$("${cmd_systemd_cryptenroll}" \
+            --fido2-device=list 2>/dev/null | tail +2)" && \
+          lib_core_is --set "${dlgpairs}"               || \
+          { dialog  --no-collapse --title "${title3}" --msgbox "${text3}" 0 0
+            false
+          }
+        }                                                             && \
+
+        # Request user to select a token
+        dlgpairs="$(for a in ${dlgpairs}; do
             tag="$(printf "%s" "$a" | cut -d' ' -f1)"
             item="$(printf "%s" "$a" | cut -d' ' -f2- | tr -s ' ')"
             printf "%s\n%s\n" "${tag}" "${item}"
           done)"                                                      && \
-        ( lib_core_is --set "${dlgpairs}" || exit 9 )                 && \
+
         result="$(dialog --title "${title1}" --menu "${text2}" 0 0 0  \
           ${dlgpairs} 2>&1 1>&3)"
         ;;
     esac                                                                    || \
-    exitcode="$?"
 
-    case "${exitcode}" in
-      9)
-        # Show error message if job list is empty (see 'exit 9' above)
-        dialog  --no-collapse --title "${title3}" --msgbox "${text3}" 0 0
-        ;;
-      *)
-        ;;
-    esac
+    exitcode="$?"
   exec 3>&-
 
   IFS="$OLDIFS"
@@ -3618,27 +3628,28 @@ menu_arg_pkcs11_token_uri() {
 
     case "${result}" in
       ${ARG_PKCS11_TOKEN_URI_MANUAL})
-        dlgpairs="$(for a in \
-          $("${cmd_systemd_cryptenroll}" --pkcs11-token-uri=list 2>/dev/null | tail +2); do
+        # Get list of PKCS#11 token URIs
+        { dlgpairs="$("${cmd_systemd_cryptenroll}" \
+            --pkcs11-token-uri=list 2>/dev/null | tail +2)" && \
+          lib_core_is --set "${dlgpairs}"                   || \
+          { dialog  --no-collapse --title "${title3}" --msgbox "${text3}" 0 0
+            false
+          }
+        }                                                             && \
+
+        # Request user to select a token URI
+        dlgpairs="$(for a in ${dlgpairs}; do
             tag="$(printf "%s" "$a" | cut -d' ' -f1)"
             item="$(printf "%s" "$a" | cut -d' ' -f2- | tr -s ' ')"
             printf "%s\n%s\n" "${tag}" "${item}"
           done)"                                                      && \
-        ( lib_core_is --set "${dlgpairs}" || exit 9 )                 && \
+
         result="$(dialog --title "${title1}" --menu "${text2}" 0 0 0  \
           ${dlgpairs} 2>&1 1>&3)"
         ;;
     esac                                                                    || \
-    exitcode="$?"
 
-    case "${exitcode}" in
-      9)
-        # Show error message if job list is empty (see 'exit 9' above)
-        dialog  --no-collapse --title "${title3}" --msgbox "${text3}" 0 0
-        ;;
-      *)
-        ;;
-    esac
+    exitcode="$?"
   exec 3>&-
 
   IFS="$OLDIFS"
@@ -3692,27 +3703,28 @@ menu_arg_tpm2_device() {
         #     printf "%s\n%s\n" "${tag}" "${item}"
         #   done)"                                                      && \
 
-        dlgpairs="$(for a in \
-          $("${cmd_systemd_cryptenroll}"  --tpm2-device=list 2>/dev/null | tail +2); do
+        # Get list of TPM2 devices
+        { dlgpairs="$("${cmd_systemd_cryptenroll}" \
+            --tpm2-device=list 2>/dev/null | tail +2)"  && \
+          lib_core_is --set "${dlgpairs}"               || \
+          { dialog  --no-collapse --title "${title3}" --msgbox "${text3}" 0 0
+            false
+          }
+        }                                                             && \
+
+        # Request user to select a device
+        dlgpairs="$(for a in ${dlgpairs}; do
             tag="$(printf "%s" "$a" | cut -d' ' -f1)"
             item="$(printf "%s" "$a" | cut -d' ' -f2- | tr -s ' ')"
             printf "%s\n%s\n" "${tag}" "${item}"
           done)"                                                      && \
-        ( lib_core_is --set "${dlgpairs}" || exit 9 )                 && \
+
         result="$(dialog --title "${title1}" --menu "${text2}" 0 0 0  \
           ${dlgpairs} 2>&1 1>&3)"
         ;;
     esac                                                                    || \
-    exitcode="$?"
 
-    case "${exitcode}" in
-      9)
-        # Show error message if job list is empty (see 'exit 9' above)
-        dialog  --no-collapse --title "${title3}" --msgbox "${text3}" 0 0
-        ;;
-      *)
-        ;;
-    esac
+    exitcode="$?"
   exec 3>&-
 
   IFS="$OLDIFS"
