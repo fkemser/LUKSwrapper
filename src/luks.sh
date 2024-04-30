@@ -17,9 +17,10 @@
 #
 #         BUGS:   ---
 #
-#        NOTES:   ---
+#        NOTES:   Please edit the configuration file (/etc/luks.cfg.sh)
+#                 before you start.
 #
-#        TODO:    See 'TODO:'-tagged lines below.
+#         TODO:   See 'TODO:'-tagged lines below.
 #===============================================================================
 
 #===============================================================================
