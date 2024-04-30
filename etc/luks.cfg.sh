@@ -16,7 +16,7 @@
 #
 #        NOTES:   Please DO NOT DELETE this file, even when it is empty.
 #
-#        TODO:    See 'TODO:'-tagged lines below.
+#         TODO:   See 'TODO:'-tagged lines below.
 #===============================================================================
 
 #===============================================================================
