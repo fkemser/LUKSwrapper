@@ -2624,16 +2624,16 @@ list_token() {
   case "${arg_auth}" in
     ${ARG_AUTH_FIDO2})
       # lib_os_dev_class_list "hidraw" "   "
-      "${cmd_systemd_cryptenroll}" --fido2-device=list | tail +2
+      lib_core_sudo "${cmd_systemd_cryptenroll}" --fido2-device=list | tail +2
       ;;
 
     ${ARG_AUTH_PKCS11})
-      "${cmd_systemd_cryptenroll}" --pkcs11-token-uri=list | tail +2
+      lib_core_sudo "${cmd_systemd_cryptenroll}" --pkcs11-token-uri=list | tail +2
       ;;
 
     ${ARG_AUTH_TPM2})
       # lib_os_dev_class_list "tpmrm" "   "
-      "${cmd_systemd_cryptenroll}" --tpm2-device=list | tail +2
+      lib_core_sudo "${cmd_systemd_cryptenroll}" --tpm2-device=list | tail +2
       ;;
   esac
 }
@@ -3344,9 +3344,9 @@ menu_arg_fido2_device() {
         #   done)"                                                      && \
 
         # Get list of FIDO2 token
-        { dlgpairs="$("${cmd_systemd_cryptenroll}" \
-            --fido2-device=list 2>/dev/null | tail +2)" && \
-          lib_core_is --set "${dlgpairs}"               || \
+        { dlgpairs="$(lib_core_sudo "${cmd_systemd_cryptenroll}"  \
+            --fido2-device=list 2>/dev/null | tail +2)"           && \
+          lib_core_is --set "${dlgpairs}"                         || \
           { dialog  --no-collapse --title "${title3}" --msgbox "${text3}" 0 0
             false
           }
@@ -3630,9 +3630,9 @@ menu_arg_pkcs11_token_uri() {
     case "${result}" in
       ${ARG_PKCS11_TOKEN_URI_MANUAL})
         # Get list of PKCS#11 token URIs
-        { dlgpairs="$("${cmd_systemd_cryptenroll}" \
-            --pkcs11-token-uri=list 2>/dev/null | tail +2)" && \
-          lib_core_is --set "${dlgpairs}"                   || \
+        { dlgpairs="$(lib_core_sudo "${cmd_systemd_cryptenroll}"  \
+            --pkcs11-token-uri=list 2>/dev/null | tail +2)"       && \
+          lib_core_is --set "${dlgpairs}"                         || \
           { dialog  --no-collapse --title "${title3}" --msgbox "${text3}" 0 0
             false
           }
@@ -3705,9 +3705,9 @@ menu_arg_tpm2_device() {
         #   done)"                                                      && \
 
         # Get list of TPM2 devices
-        { dlgpairs="$("${cmd_systemd_cryptenroll}" \
-            --tpm2-device=list 2>/dev/null | tail +2)"  && \
-          lib_core_is --set "${dlgpairs}"               || \
+        { dlgpairs="$(lib_core_sudo "${cmd_systemd_cryptenroll}"  \
+            --tpm2-device=list 2>/dev/null | tail +2)"            && \
+          lib_core_is --set "${dlgpairs}"                         || \
           { dialog  --no-collapse --title "${title3}" --msgbox "${text3}" 0 0
             false
           }
