@@ -91,7 +91,7 @@
 
 ![Screenshot 1][screenshot1]
 
-This project provides a `dialog`-based interface to
+This project provides command-line switches as well as a `dialog`-based interface to
 
 - setup dm-crypt/LUKS2 encryption on hard disks and flash drives,
 - mount and unmount LUKS2 devices,
@@ -217,7 +217,7 @@ sudo apt install libtss2-esys-3.0.2-0 libtss2-rc0   # TPM2 (optional)
    ```
 2. Edit the repository configuration file. In case it is empty just keep it as it is, **do not delete it**.
 	```sh
-   nano ./LUKSwrapper/etc/cups.cfg.sh
+   nano ./LUKSwrapper/etc/luks.cfg.sh
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -531,7 +531,7 @@ Don't forget to give the project a star! Thanks again!
 
 Distributed under the **GNU General Public License v3.0 (or later)**. See [`LICENSE`][license-url] for more information.
 
-> :warning: The license above does not apply to the files and folders within the library `/lib` directory. Please have a look at the `LICENSE` file located in the root directory of each library to get more information.
+> :warning: The license above does not apply to the files and folders within the library directory `/lib`. Please have a look at the `LICENSE` file located in the root directory of each library to get more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
