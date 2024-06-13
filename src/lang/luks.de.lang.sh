@@ -421,7 +421,7 @@ Siehe auch: ${L_LUKS_HLP_TXT_REQUIREMENTS_3_SEEALSO}"
 #  TEXTS
 #-------------------------------------------------------------------------------
 # Intro Description
-readonly L_LUKS_DE_HLP_TXT_INTRO="Eine Sammlung von Shellskripts, um LUKS2-verschlüsselte Laufwerke einzurichten und zu verwalten."
+readonly L_LUKS_DE_HLP_TXT_INTRO="Eine Sammlung von Shellskripten, um LUKS2-verschlüsselte Laufwerke einzurichten und zu verwalten."
 
 #-------------------------------------------------------------------------------
 #  TL;DR
