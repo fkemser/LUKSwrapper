@@ -472,7 +472,7 @@ args_check() {
   #-----------------------------------------------------------------------------
   #  arg_auth
   #-----------------------------------------------------------------------------
-  if lib_core_is --set "${arg_auth}"; then
+  if lib_core_is --not-empty "${arg_auth}"; then
     #  Get list of allowed authentication mechanisms
     local arg_auth_list
     arg_auth_list="$(lib_core_str_to --const "ARG_AUTH_LIST_${arg_action}")"
@@ -496,7 +496,7 @@ args_check() {
   #-----------------------------------------------------------------------------
   #  arg_device_src
   #-----------------------------------------------------------------------------
-  if lib_core_is --set "${arg_device_src}"; then
+  if lib_core_is --not-empty "${arg_device_src}"; then
     case "${arg_action}" in
       ${ARG_ACTION_ENCRYPT})
         lib_core_is --blockdevice "${arg_device_src}"
@@ -514,7 +514,7 @@ args_check() {
   #-----------------------------------------------------------------------------
   #  arg_device_dst
   #-----------------------------------------------------------------------------
-  if lib_core_is --set "${arg_device_dst}"; then
+  if lib_core_is --not-empty "${arg_device_dst}"; then
     case "${arg_action}" in
       ${ARG_ACTION_CLONE})
         { lib_core_is --blockdevice "${arg_device_dst}" || \
@@ -534,7 +534,7 @@ args_check() {
   #-----------------------------------------------------------------------------
   #  arg_fido2_device
   #-----------------------------------------------------------------------------
-  if lib_core_is --set "${arg_fido2_device}"; then
+  if lib_core_is --not-empty "${arg_fido2_device}"; then
     case "${arg_fido2_device}" in
       ${ARG_FIDO2_DEVICE_AUTO}) ;;
       /dev/hidraw*) lib_core_is --exists "${arg_fido2_device}" ;;
@@ -556,7 +556,7 @@ args_check() {
   #-----------------------------------------------------------------------------
   #  arg_headerfile
   #-----------------------------------------------------------------------------
-  if lib_core_is --set "${arg_headerfile}"; then
+  if lib_core_is --not-empty "${arg_headerfile}"; then
     case "${arg_action}" in
       ${ARG_ACTION_HEADER_BACKUP})
         touch -c "${arg_headerfile}" 2>/dev/null && \
@@ -573,7 +573,7 @@ args_check() {
   #-----------------------------------------------------------------------------
   #  arg_iter_time
   #-----------------------------------------------------------------------------
-  if lib_core_is --set "${arg_iter_time}"; then
+  if lib_core_is --not-empty "${arg_iter_time}"; then
     lib_math_is_within_range \
       "${ARG_ITER_TIME_MIN}" "${arg_iter_time}" "${ARG_ITER_TIME_MAX}" || \
     lib_shtpl_arg_error "arg_iter_time"
@@ -582,7 +582,7 @@ args_check() {
   #-----------------------------------------------------------------------------
   #  arg_key_size
   #-----------------------------------------------------------------------------
-  if lib_core_is --set "${arg_key_size}"; then
+  if lib_core_is --not-empty "${arg_key_size}"; then
     lib_math_is_within_range \
       "${ARG_KEY_SIZE_MIN}" "${arg_key_size}" "${ARG_KEY_SIZE_MAX}" || \
     lib_shtpl_arg_error "arg_key_size"
@@ -606,14 +606,14 @@ args_check() {
   #-----------------------------------------------------------------------------
   #  arg_with_pin
   #-----------------------------------------------------------------------------
-  if lib_core_is --set "${arg_with_pin}"; then
+  if lib_core_is --not-empty "${arg_with_pin}"; then
     lib_core_is --bool "${arg_with_pin}"
   fi                                                                        && \
 
   #-----------------------------------------------------------------------------
   #  arg_tpm2_device
   #-----------------------------------------------------------------------------
-  if lib_core_is --set "${arg_tpm2_device}"; then
+  if lib_core_is --not-empty "${arg_tpm2_device}"; then
     case "${arg_tpm2_device}" in
       ${ARG_TPM2_DEVICE_AUTO}) ;;
       /dev/tpmrm*) lib_core_is --exists "${arg_tpm2_device}" ;;
@@ -625,7 +625,7 @@ args_check() {
   #-----------------------------------------------------------------------------
   #  arg_tpm2_pcrs
   #-----------------------------------------------------------------------------
-  if lib_core_is --set "${arg_tpm2_pcrs}"; then
+  if lib_core_is --not-empty "${arg_tpm2_pcrs}"; then
     lib_core_regex --luks2-tpm2-pcrs "${arg_tpm2_pcrs}" || \
     lib_shtpl_arg_error "arg_tpm2_pcrs"
   fi                                                                        || \
@@ -956,7 +956,7 @@ ${ttl_action} := $(lib_msg_print_list_ptr "${ARG_ACTION_LIST_SCRIPT}" "${ptr_pre
 
 ${ttl_option} := $(lib_msg_print_list_ptr "${LIST_ARG}" "${ptr_prefix}_HLP_PAR_" "" "true")"
 
-  if lib_core_is --set "${txt_lastarg}"; then
+  if lib_core_is --not-empty "${txt_lastarg}"; then
     synopsis="\
 ${synopsis}
 
@@ -1193,7 +1193,7 @@ init_check_pre() {
   optionalFulfilled="false"
 
   #  Update list of allowed authentication mechanisms
-  if lib_core_is --set "${cmd_systemd_cryptenroll}"; then
+  if lib_core_is --not-empty "${cmd_systemd_cryptenroll}"; then
     ARG_AUTH_LIST="${ARG_AUTH_LIST} RECOVERY"
     if ${systemd_fido2_supported}; then
       ARG_AUTH_LIST="${ARG_AUTH_LIST} FIDO2"
@@ -1212,7 +1212,7 @@ init_check_pre() {
   readonly ARG_AUTH_LIST_LIST_TOKEN="${ARG_AUTH_LIST_LIST_TOKEN}"
 
   #  Update list of allowed authentication mechanisms
-  if lib_core_is --set "${cmd_systemd_cryptsetup}"; then
+  if lib_core_is --not-empty "${cmd_systemd_cryptsetup}"; then
     if ${systemd_fido2_supported}; then
       ARG_AUTH_LIST_OPEN="${ARG_AUTH_LIST_OPEN} FIDO2"
     fi
@@ -2607,7 +2607,7 @@ list_blk() {
       done
       IFS="$OLDIFS"
 
-      lib_core_is --set "${out_devs}" && \
+      lib_core_is --not-empty "${out_devs}" && \
       printf "%s${out_header:+\n}%s" "${out_header}" "${out_devs}"
       ;;
 
@@ -2802,7 +2802,7 @@ open() {
       "true" "false" "${TXT_OPEN_INFO_MOUNTED} <${arg_mount}>."       && \
 
     # If there is a graphical environment open the file explorer
-    if lib_core_is --set "${DISPLAY}"; then
+    if lib_core_is --not-empty "${DISPLAY}"; then
       xdg-open "${arg_mount}"
     fi
   fi
@@ -2937,7 +2937,7 @@ unmount() {
           mapper="$(printf "%s" "${line}" | cut -d' ' -f2)"
           mountpoint="$(printf "%s" "${line}" | cut -d' ' -f3-)"
 
-          if lib_core_is --set "${mountpoint}"; then
+          if lib_core_is --not-empty "${mountpoint}"; then
             lib_core_echo "true" "true"                             \
               "${TXT_UNMOUNT_INFO_UNMOUNTING} <${mountpoint}> ..."  && \
             lib_core_sudo umount "${mountpoint}"                    && \
@@ -3025,7 +3025,7 @@ menu_arg_auth() {
         eval "item=\${L_LUKS_${ID_LANG}_DLG_ITM_ARG_AUTH_${a}}"
         printf "%s\n%s\n" "${tag}" "${item}"
       done)"                                                                && \
-    lib_core_is --set "${dlgpairs}"                                         && \
+    lib_core_is --not-empty "${dlgpairs}"                                   && \
     IFS="${LIB_C_STR_NEWLINE}"                                              && \
     result="$(dialog --title "${title}" --menu "${text}" 0 0 0  \
       ${dlgpairs} 2>&1 1>&3)"                                               || \
@@ -3133,7 +3133,7 @@ menu_arg_device_dst() {
           item="${name} (${size})${serial:+ (${serial})}"
           printf "%s\n%s\n" "${tag}" "${item}"
         done)"                                                              && \
-      lib_core_is --set "${lsblk_menu}"                                     && \
+      lib_core_is --not-empty "${lsblk_menu}"                               && \
       result="$(dialog --extra-button --extra-label "${extra}"  \
         --title "${title1}" --menu "${text1}" 0 0 0             \
         ${lsblk_menu} 2>&1 1>&3)"                                           || \
@@ -3271,7 +3271,7 @@ menu_arg_device_src() {
           item="${name} (${size})${serial:+ (${serial})}"
           printf "%s\n%s\n" "${tag}" "${item}"
         done)"                                                              && \
-      lib_core_is --set "${lsblk_menu}"                                     && \
+      lib_core_is --not-empty "${lsblk_menu}"                               && \
       result="$(dialog --extra-button --extra-label "${extra}"  \
         --title "${title1}" --menu "${text1}" 0 0 0             \
         ${lsblk_menu} 2>&1 1>&3)"                                           || \
@@ -3346,7 +3346,7 @@ menu_arg_fido2_device() {
         # Get list of FIDO2 token
         { dlgpairs="$(lib_core_sudo "${cmd_systemd_cryptenroll}"  \
             --fido2-device=list 2>/dev/null | tail +2)"           && \
-          lib_core_is --set "${dlgpairs}"                         || \
+          lib_core_is --not-empty "${dlgpairs}"                   || \
           { dialog  --no-collapse --title "${title3}" --msgbox "${text3}" 0 0
             false
           }
@@ -3632,7 +3632,7 @@ menu_arg_pkcs11_token_uri() {
         # Get list of PKCS#11 token URIs
         { dlgpairs="$(lib_core_sudo "${cmd_systemd_cryptenroll}"  \
             --pkcs11-token-uri=list 2>/dev/null | tail +2)"       && \
-          lib_core_is --set "${dlgpairs}"                         || \
+          lib_core_is --not-empty "${dlgpairs}"                   || \
           { dialog  --no-collapse --title "${title3}" --msgbox "${text3}" 0 0
             false
           }
@@ -3707,7 +3707,7 @@ menu_arg_tpm2_device() {
         # Get list of TPM2 devices
         { dlgpairs="$(lib_core_sudo "${cmd_systemd_cryptenroll}"  \
             --tpm2-device=list 2>/dev/null | tail +2)"            && \
-          lib_core_is --set "${dlgpairs}"                         || \
+          lib_core_is --not-empty "${dlgpairs}"                   || \
           { dialog  --no-collapse --title "${title3}" --msgbox "${text3}" 0 0
             false
           }
