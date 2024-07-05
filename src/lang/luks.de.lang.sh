@@ -131,7 +131,7 @@ readonly L_LUKS_DE_DLG_ITM_ARG_FIDO2_DEVICE_MANUAL="Manuell (aus einer Liste all
 
 readonly L_LUKS_DE_HLP_DES_ARG_FIDO2_DEVICE="${L_LUKS_DE_HLP_REF_ARG_AUTH_FIDO2} Legt das zu verwendende FIDO2(hidraw)-Gerät fest, zulässige Werte:"
 readonly L_LUKS_DE_HLP_DES_ARG_FIDO2_DEVICE_AUTO="${L_LUKS_DE_DLG_ITM_ARG_FIDO2_DEVICE_AUTO}"
-readonly L_LUKS_DE_HLP_DES_ARG_FIDO2_DEVICE_MANUAL="Manuell, durch Angabe des devnode-Namens (<dev> = /dev/hidraw...). Führen Sie '${L_ABOUT_RUN} --list-token fido2' aus, um alle derzeit verbundenen hidraw-Geräte anzuzeigen."
+readonly L_LUKS_DE_HLP_DES_ARG_FIDO2_DEVICE_MANUAL="Manuell, durch Angabe des devnode-Namens (<dev> = /dev/hidraw...). Führen Sie '${L_LUKS_ABOUT_RUN} --list-token fido2' aus, um alle derzeit verbundenen hidraw-Geräte anzuzeigen."
 
 #-------------------------------------------------------------------------------
 #  arg_filesystem
@@ -209,7 +209,7 @@ readonly L_LUKS_DE_DLG_ITM_ARG_PKCS11_TOKEN_URI_MANUAL="${L_LUKS_DE_DLG_ITM_ARG_
 
 readonly L_LUKS_DE_HLP_DES_ARG_PKCS11_TOKEN_URI="${L_LUKS_DE_HLP_REF_ARG_AUTH_PKCS11} PKCS#11-URI des zu verwendenden Token-Objekts festlegen, zulässige Werte:"
 readonly L_LUKS_DE_HLP_DES_ARG_PKCS11_TOKEN_URI_AUTO="${L_LUKS_DE_DLG_ITM_ARG_PKCS11_TOKEN_URI_AUTO}"
-readonly L_LUKS_DE_HLP_DES_ARG_PKCS11_TOKEN_URI_MANUAL="Manuell, durch Angabe der URI (<uri> = pkcs11:...). Führen Sie '${L_ABOUT_RUN} --list-token pkcs11' aus, um alle derzeit verbundenen PKCS#11-Token anzuzeigen."
+readonly L_LUKS_DE_HLP_DES_ARG_PKCS11_TOKEN_URI_MANUAL="Manuell, durch Angabe der URI (<uri> = pkcs11:...). Führen Sie '${L_LUKS_ABOUT_RUN} --list-token pkcs11' aus, um alle derzeit verbundenen PKCS#11-Token anzuzeigen."
 
 #-------------------------------------------------------------------------------
 #  arg_tpm2_device
@@ -226,7 +226,7 @@ readonly L_LUKS_DE_DLG_ITM_ARG_TPM2_DEVICE_MANUAL="Manuell (aus einer Liste alle
 
 readonly L_LUKS_DE_HLP_DES_ARG_TPM2_DEVICE="${L_LUKS_DE_HLP_REF_ARG_AUTH_TPM2} Zu verwendenden TPM2-Chip festlegen, zulässige Werte:"
 readonly L_LUKS_DE_HLP_DES_ARG_TPM2_DEVICE_AUTO="${L_LUKS_DE_DLG_ITM_ARG_TPM2_DEVICE_AUTO}"
-readonly L_LUKS_DE_HLP_DES_ARG_TPM2_DEVICE_MANUAL="Manuell, durch Angabe des devnode-Namens (<dev> = /dev/tpmrm...). Führen Sie '${L_ABOUT_RUN} --list-token tpm2' aus, um alle erkannten TPM2-Chips anzuzeigen."
+readonly L_LUKS_DE_HLP_DES_ARG_TPM2_DEVICE_MANUAL="Manuell, durch Angabe des devnode-Namens (<dev> = /dev/tpmrm...). Führen Sie '${L_LUKS_ABOUT_RUN} --list-token tpm2' aus, um alle erkannten TPM2-Chips anzuzeigen."
 
 #-------------------------------------------------------------------------------
 #  arg_tpm2_pcrs
@@ -257,7 +257,7 @@ readonly L_LUKS_DE_HLP_DES_LASTARG="Zu verwendender Datenträger (Blockgerät), 
 #  Script actions <ARG_ACTION_...>
 #-------------------------------------------------------------------------------
 #  Main Menu Title/Text
-readonly L_LUKS_DE_DLG_TTL_ARG_ACTION="${L_ABOUT_PROJECT}"
+readonly L_LUKS_DE_DLG_TTL_ARG_ACTION="${L_LUKS_ABOUT_PROJECT}"
 readonly L_LUKS_DE_DLG_TXT_ARG_ACTION="Was möchten Sie tun?"
 
 #  ARG_ACTION_BENCHMARK

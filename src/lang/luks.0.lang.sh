@@ -32,6 +32,14 @@
 #  Language-independent constants, to be stored within THIS file
 #===============================================================================
 #-------------------------------------------------------------------------------
+#  Used in help, section "ABOUT" and welcome dialogue
+#-------------------------------------------------------------------------------
+#  Constant                       Description
+#  (Example)
+#  -----------------------------------------------------------------------------
+#  L_<S>_ABOUT_...                See 'ABOUT THIS REPOSITORY' section below.
+#
+#-------------------------------------------------------------------------------
 #  Used in help, section "SYNOPSIS"
 #-------------------------------------------------------------------------------
 #  Constant                       Description             Example (value)
@@ -136,6 +144,45 @@
 #===============================================================================
 
 #===============================================================================
+#  ABOUT THIS REPOSITORY
+#===============================================================================
+#  Author name and mail address (multiple authors separated by newline)
+readonly L_LUKS_ABOUT_AUTHORS="Florian Kemser and the LUKSwrapper contributors"
+
+#  (Optional) Project description, should be a oneliner describing what the
+#  project does. Please start with a low letter and leave the terminating
+#  '.' out.
+readonly L_LUKS_ABOUT_DESCRIPTION="a collection of shell scripts to setup and manage LUKS2-encrypted drives, either interactively or via command line"
+
+#  (Optional) Institution (multiple lines allowed)
+readonly L_LUKS_ABOUT_INSTITUTION=""
+
+#  (Optional) Project license (SPDX-License-Identifier)
+#
+#  For the full SPDX license list please have a look at
+#  'https://spdx.org/licenses/'. However, only some licenses
+#  are supported, see </lib/SHtemplateLIB/lib/licenses> folder.
+#
+#  If you are not sure which license to choose
+#  just have a look at e.g. 'https://choosealicense.com'.
+readonly L_LUKS_ABOUT_LICENSE="GPL-3.0-or-later"
+
+#  (Optional) ASCII logo to display when running the script in interactive ('dialog') mode
+readonly L_LUKS_ABOUT_LOGO=""
+
+#  Project title, e.g. 'My Project'
+readonly L_LUKS_ABOUT_PROJECT="LUKSwrapper"
+
+#  DO NOT EDIT
+readonly L_LUKS_ABOUT_RUN="./$(basename "$0")"
+
+#  (Optional) Release/Version number, e.g. '1.1.0'
+readonly L_LUKS_ABOUT_VERSION="1.0.0"
+
+#  (Optional) Project year(s), e.g. '2023', '2023-2024'
+readonly L_LUKS_ABOUT_YEARS="2022-2024"
+
+#===============================================================================
 #  PARAMETER (TEMPLATE) - DO NOT EDIT
 #===============================================================================
 #  Script actions <ARG_ACTION_...>
@@ -199,26 +246,26 @@ readonly L_LUKS_HLP_PAR_LASTARG="[<device>]"
 #-------------------------------------------------------------------------------
 # Example 1
 readonly L_LUKS_HLP_TXT_EXAMPLES_1="\
-${L_ABOUT_RUN} --show-drives
-${L_ABOUT_RUN} --cipher aes-xts-plain64 --hash sha256 --iter-time 2000 --key-size 512 --filesystem ext4 --encrypt /dev/sdz"
+${L_LUKS_ABOUT_RUN} --show-drives
+${L_LUKS_ABOUT_RUN} --cipher aes-xts-plain64 --hash sha256 --iter-time 2000 --key-size 512 --filesystem ext4 --encrypt /dev/sdz"
 
 # Example 2
 readonly L_LUKS_HLP_TXT_EXAMPLES_2="\
-${L_ABOUT_RUN} --show-drives
-${L_ABOUT_RUN} --mapper mymapper --filesystem auto --open /dev/sdz
-${L_ABOUT_RUN} --close /dev/sdz"
+${L_LUKS_ABOUT_RUN} --show-drives
+${L_LUKS_ABOUT_RUN} --mapper mymapper --filesystem auto --open /dev/sdz
+${L_LUKS_ABOUT_RUN} --close /dev/sdz"
 
 # Example 3
 readonly L_LUKS_HLP_TXT_EXAMPLES_3="\
-${L_ABOUT_RUN} --auth fido2 --fido2-device auto --enroll /dev/sdz
-${L_ABOUT_RUN} --auth fido2 --fido2-device auto --mapper mymapper --open /dev/sdz
-${L_ABOUT_RUN} --close /dev/sdz"
+${L_LUKS_ABOUT_RUN} --auth fido2 --fido2-device auto --enroll /dev/sdz
+${L_LUKS_ABOUT_RUN} --auth fido2 --fido2-device auto --mapper mymapper --open /dev/sdz
+${L_LUKS_ABOUT_RUN} --close /dev/sdz"
 
 # Example 4
 readonly L_LUKS_HLP_TXT_EXAMPLES_4="\
-${L_ABOUT_RUN} --header-info /dev/sdz
-${L_ABOUT_RUN} --header-backup /dev/sdz /tmp/luks.header
-${L_ABOUT_RUN} --header-restore /tmp/luks.header /dev/sdz"
+${L_LUKS_ABOUT_RUN} --header-info /dev/sdz
+${L_LUKS_ABOUT_RUN} --header-backup /dev/sdz /tmp/luks.header
+${L_LUKS_ABOUT_RUN} --header-restore /tmp/luks.header /dev/sdz"
 
 #-------------------------------------------------------------------------------
 #  NOTES
