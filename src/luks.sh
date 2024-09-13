@@ -392,6 +392,11 @@ args_check() {
     true
 
   elif  [ "${arg_action}" != "${ARG_ACTION_HELP}" ] && \
+        [ "${arg_mode}" = "${ARG_MODE_INTERACTIVE_SUBMENU}" ]; then
+    # Submenu mode
+    true
+
+  elif  [ "${arg_action}" != "${ARG_ACTION_HELP}" ] && \
         [ "${arg_mode}" = "${ARG_MODE_SCRIPT}" ]; then
 
     # Script mode
@@ -688,7 +693,8 @@ args_read() {
       --submenu)
         # Possibility to run a certain submenu interactively
         arg_mode="${ARG_MODE_INTERACTIVE_SUBMENU}"
-        arg_action="$2"; [ $# -ge 1 ] && { shift; }
+        arg_action="$2"
+        [ $# -ge 1 ] && { shift; }
         ;;
 
       #-------------------------------------------------------------------------
@@ -1302,6 +1308,7 @@ init_check_post() {
   #                                     \|/
   #-----------------------------------------------------------------------------
   true                                                                      || \
+  optionalFulfilled="false"
   #-----------------------------------------------------------------------------
   #                                     /|\
   #                                    /|||\
@@ -1310,7 +1317,6 @@ init_check_post() {
   #                        DONE: DEFINE YOUR CHECKS HERE
   #                   (DO NOT FORGET THE TERMINATING '|| \')
   #-----------------------------------------------------------------------------
-  optionalFulfilled="false"
   if ! ${optionalFulfilled}; then
     warning "${TXT_INIT_CHECK_WARN}"
     sleep 3
@@ -1384,7 +1390,7 @@ init_first() {
   #                                     |||
   #                                    \|||/
   #                                     \|/
-  #----------------------------------------------------------------------------
+  #-----------------------------------------------------------------------------
   #-----------------------------------------------------------------------------
   #                                     /|\
   #                                    /|||\
@@ -1740,7 +1746,7 @@ main_interactive() {
       #                                  \|||/
       #                                   \|/
       #-------------------------------------------------------------------------
-      ${ARG_ACTION_ABOUT}|${ARG_ACTION_HELP}|${ARG_ACTION_EXIT})
+      ${ARG_ACTION_ABOUT}|${ARG_ACTION_EXIT}|${ARG_ACTION_HELP})
         run || exitcode="$?"
         ;;
       #-------------------------------------------------------------------------
@@ -1937,7 +1943,7 @@ trap_main() {
   local pid
   pid="$(lib_os_ps_pidlock --getpid)" || \
   lib_os_ps_get_ownpid pid
-  info --syslog "Signal <${arg_signal}> received. Terminating (PID <${pid}>) ..."
+  eval info --syslog \"${TXT_TRAP_MAIN_TERMINATING}\"
 
   # Special Trap Handling
   case "${arg_mode}" in
@@ -2037,7 +2043,7 @@ trap_main() {
   #  If PID lock is disabled ("PIDLOCK_ENABLED"="false"), then
   #  <lib_os_ps_pidlock()> will fail but without any consequences.
   lib_os_ps_pidlock --unlock
-  info --syslog "Script terminated (PID <${pid}>)."
+  eval info --syslog \"${TXT_TRAP_MAIN_TERMINATED}\"
 
   #  Exit - Depends on signal ...
   case "${arg_signal}" in
@@ -2131,6 +2137,7 @@ menu_main() {
   case "${arg_action}" in
     ${ARG_ACTION_ABOUT}|${ARG_ACTION_EXIT}|${ARG_ACTION_HELP}) return ;;
   esac                                                                      && \
+
   #-----------------------------------------------------------------------------
   #                    DONE: DEFINE YOUR MENU HANDLING HERE
   #                   (DO NOT FORGET THE TERMINATING '|| \')
