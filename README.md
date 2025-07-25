@@ -50,12 +50,13 @@
   </p>
 </div>
 
-
+<p align="center"><img src="res/screenshot1.png" alt="screenshot1" width="75%"/></p>
 
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
   <ol>
+    <li><a href="#tldr">TL;DR</a></li>
     <li>
       <a href="#about-the-project">About The Project</a>
       <ul>
@@ -69,7 +70,7 @@
         <li>
           <a href="#prerequisites">Prerequisites</a>
           <ul>
-            <li><a href="#debian">Debian</a></li>
+            <li><a href="#debian-1">Debian</a></li>
           </ul>
         </li>
         <li><a href="#installation">Installation</a></li>
@@ -86,10 +87,33 @@
 
 
 
+<!-- TL;DR -->
+## TL;DR
+
+### 1. Install dependencies
+To install all (necessary and optional) packages on your system, simply run:
+
+#### Debian
+```sh
+sudo apt install dialog cryptsetup pv libfido2-1 opensc-pkcs11 pcscd libccid \
+                 libtss2-esys-3.0.2-0 libtss2-rc0
+```
+
+### 2. Clone the repo and run the script
+```sh
+git clone --recurse-submodules https://github.com/fkemser/LUKSwrapper.git && \
+chmod +x ./LUKSwrapper/src/luks.sh && \
+./LUKSwrapper/src/luks.sh
+```
+
+For more information please have a look at the [usage](#usage-srclukssh) section below.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-
-![Screenshot 1][screenshot1]
 
 This project provides command-line switches as well as a `dialog`-based interface to
 
@@ -224,10 +248,43 @@ sudo apt install libtss2-esys-3.0.2-0 libtss2-rc0   # TPM2 (optional)
 
 
 
-<!-- USAGE EXAMPLES -->
+<!-- USAGE -->
 ## Usage (/src/luks.sh)
 
-To call the script interactively, run `/src/luks.sh` (without further arguments) from your terminal. To get help, run `/src/luks.sh -h`.  
+To call the script **interactively**, run `./LUKSwrapper/src/luks.sh` (without further arguments) from your terminal.
+
+For **script mode** run `./LUKSwrapper/src/luks.sh` followed by a list of arguments `--arg1 [<val1>] --arg2 [<val2>] ...`, see also [help](#help-script-mode) section below.
+
+### Examples (Script Mode)
+#### Encrypt device
+```sh
+./LUKSwrapper/src/luks.sh --show-drives
+./LUKSwrapper/src/luks.sh --cipher aes-xts-plain64 --hash sha256 --iter-time 2000 --key-size 512 --filesystem ext4 --encrypt /dev/sdz
+```
+
+#### Open and close device
+```sh
+./LUKSwrapper/src/luks.sh --show-drives
+./LUKSwrapper/src/luks.sh --mapper mymapper --filesystem auto --open /dev/sdz
+./LUKSwrapper/src/luks.sh --close /dev/sdz
+```
+
+#### Enroll FIDO2 token
+```sh
+./LUKSwrapper/src/luks.sh --auth fido2 --fido2-device auto --enroll /dev/sdz
+./LUKSwrapper/src/luks.sh --auth fido2 --fido2-device auto --mapper mymapper --open /dev/sdz
+./LUKSwrapper/src/luks.sh --close /dev/sdz
+```
+
+#### Backup and recover header
+```sh
+./LUKSwrapper/src/luks.sh --header-info /dev/sdz
+./LUKSwrapper/src/luks.sh --header-backup /dev/sdz /tmp/luks.header
+./LUKSwrapper/src/luks.sh --header-restore /tmp/luks.header /dev/sdz
+```
+
+### Help (Script Mode)
+To get help, run `./LUKSwrapper/src/luks.sh -h`.  
 
 ```sh
 ================================================================================
@@ -436,33 +493,6 @@ _______________________________ ACTION := --open _______________________________
                          prevent mounting.                                      
                                                                                 
                          (default: '/mnt/mapper/(--mapper <name>)')             
-
-================================================================================
-===============================     EXAMPLES     ===============================
-================================================================================
-
-________________________________ Encrypt device ________________________________
-
-./luks.sh --show-drives
-./luks.sh --cipher aes-xts-plain64 --hash sha256 --iter-time 2000 --key-size 512 --filesystem ext4 --encrypt /dev/sdz
-
-____________________________ Open and close device _____________________________
-
-./luks.sh --show-drives
-./luks.sh --mapper mymapper --filesystem auto --open /dev/sdz
-./luks.sh --close /dev/sdz
-
-______________________________ Enroll FIDO2 token ______________________________
-
-./luks.sh --auth fido2 --fido2-device auto --enroll /dev/sdz
-./luks.sh --auth fido2 --fido2-device auto --mapper mymapper --open /dev/sdz
-./luks.sh --close /dev/sdz
-
-__________________________ Backup and recover header ___________________________
-
-./luks.sh --header-info /dev/sdz
-./luks.sh --header-backup /dev/sdz /tmp/luks.header
-./luks.sh --header-restore /tmp/luks.header /dev/sdz
 
 ================================================================================
 ================================     NOTES     =================================

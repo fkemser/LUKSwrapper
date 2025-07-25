@@ -3458,7 +3458,7 @@ menu_arg_headerfile() {
       exitcode="0"
       dialog --title "${title}" --msgbox "${text}" 0 0                      && \
       result="$(dialog --title "${title}"                                   \
-        --fselect "${result:-${arg_headerfile:-~/}}" 0 0 2>&1 1>&3)"        && \
+        --fselect "${result:-${arg_headerfile:-$HOME/}}" 0 0 2>&1 1>&3)"    && \
       result="$(lib_core_expand_tilde "${result}")"                         || \
       exitcode="$?"
 
