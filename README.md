@@ -53,7 +53,7 @@
 <p align="center"><img src="res/screenshot1.png" alt="screenshot1" width="75%"/></p>
 
 <!-- TABLE OF CONTENTS -->
-<details>
+<details open>
   <summary>Table of Contents</summary>
   <ol>
     <li><a href="#tldr">TL;DR</a></li>
@@ -282,6 +282,8 @@ For **script mode** run `./LUKSwrapper/src/luks.sh` followed by a list of argume
 ./LUKSwrapper/src/luks.sh --header-backup /dev/sdz /tmp/luks.header
 ./LUKSwrapper/src/luks.sh --header-restore /tmp/luks.header /dev/sdz
 ```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Help (Script Mode)
 To get help, run `./LUKSwrapper/src/luks.sh -h`.  
@@ -527,7 +529,9 @@ also update your header backup files. Otherwise one could restore your old
 header and use deprecated passphrases/tokens.
 ```
 
-                     
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
 
 <!-- ROADMAP -->
 ## Roadmap
