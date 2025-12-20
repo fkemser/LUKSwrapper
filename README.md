@@ -174,6 +174,9 @@ Additionally, there are some use-case specific dependencies (see sections below)
 * [libfido2-1](https://developers.yubico.com/libfido2/)
 * [libtss2-esys-3.0.2-0](https://github.com/tpm2-software/tpm2-tss)
 * [libtss2-rc0](https://github.com/tpm2-software/tpm2-tss)
+* [OpenSC (PKCS#11 module)](https://github.com/OpenSC/libp11)
+* [PCSClite](https://pcsclite.apdu.fr/)
+* [USB PC/SC CCID driver](https://ccid.apdu.fr/)
 
 ### Mandatory
 ```
