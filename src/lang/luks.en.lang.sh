@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# SPDX-FileCopyrightText: Copyright (c) 2022-2024 Florian Kemser and the LUKSwrapper contributors
+# SPDX-FileCopyrightText: Copyright (c) 2022-2026 Florian Kemser and the LUKSwrapper contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 #===============================================================================
@@ -11,8 +11,8 @@
 #                 (This is a constant file, so please do NOT run it.)
 #
 #  DESCRIPTION:   --English-- String Constants File for '/src/luks.sh'
-#                 Used to generate help texts, interactive dialogues,
-#                 and other  terminal/log messages.
+#                 Used to generate help texts, interactive dialogs,
+#                 and other terminal/log messages.
 #
 #         BUGS:   ---
 #

@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# SPDX-FileCopyrightText: Copyright (c) 2022-2024 Florian Kemser and the LUKSwrapper contributors
+# SPDX-FileCopyrightText: Copyright (c) 2022-2026 Florian Kemser and the LUKSwrapper contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 #===============================================================================
@@ -387,19 +387,23 @@ args_check() {
   #-----------------------------------------------------------------------------
   if    [ "${arg_action}" != "${ARG_ACTION_HELP}" ] && \
         [ "${arg_mode}" = "${ARG_MODE_DAEMON}" ]; then
-
-    # Daemon mode
+    #===========================================================================
+    #  Daemon mode
+    #===========================================================================
     true
 
   elif  [ "${arg_action}" != "${ARG_ACTION_HELP}" ] && \
         [ "${arg_mode}" = "${ARG_MODE_INTERACTIVE_SUBMENU}" ]; then
-    # Submenu mode
+    #===========================================================================
+    #  Submenu mode
+    #===========================================================================
     true
 
   elif  [ "${arg_action}" != "${ARG_ACTION_HELP}" ] && \
         [ "${arg_mode}" = "${ARG_MODE_SCRIPT}" ]; then
-
-    # Script mode
+    #===========================================================================
+    #  Script mode (action-independent checks)
+    #===========================================================================
     case "${arg_action}" in
       ${ARG_ACTION_BENCHMARK})
         ;;
@@ -443,6 +447,18 @@ args_check() {
         ;;
     esac                                                              && \
 
+    #===========================================================================
+    #  Script mode (action-dependent checks that are specific to script mode)
+    #===========================================================================
+    case "${arg_action}" in
+      *) true ;;
+    esac                                                              && \
+
+    #===========================================================================
+    #  Script mode (checks that are also relevant to interactive mode)
+    #===========================================================================
+    #  The following checks mostly follow <menu_main()>'s structure.
+    #===========================================================================
     case "${arg_action}" in
       ${ARG_ACTION_ENROLL}|${ARG_ACTION_OPEN}|${ARG_ACTION_REPLACE})
         case "${arg_auth}" in
@@ -472,7 +488,8 @@ args_check() {
   #  Check argument types / value ranges
   #-----------------------------------------------------------------------------
   #  For more available checks, please have a look at the functions
-  #  <lib_core_is()> and <lib_core_regex()> in '/lib/SHlib/lib/core.lib.sh'
+  #  <lib_core_is()> in '/lib/SHlib/lib/core.lib.sh' and
+  #  <lib_regex()> in '/lib/SHlib/lib/regex.lib.sh'.
   #-----------------------------------------------------------------------------
   #-----------------------------------------------------------------------------
   #  arg_auth
@@ -631,7 +648,7 @@ args_check() {
   #  arg_tpm2_pcrs
   #-----------------------------------------------------------------------------
   if lib_core_is --not-empty "${arg_tpm2_pcrs}"; then
-    lib_core_regex --luks2-tpm2-pcrs "${arg_tpm2_pcrs}" || \
+    lib_regex --luks2-tpm2-pcrs "${arg_tpm2_pcrs}" || \
     lib_shtpl_arg_error "arg_tpm2_pcrs"
   fi                                                                        || \
   #-----------------------------------------------------------------------------
@@ -1667,7 +1684,7 @@ main_daemon() {
 #  DESCRIPTION:  Main subfunction (interactive / submenu mode)
 #===============================================================================
 main_interactive() {
-  # Check for minimum terminal size (otherwise some dialogues would fail)
+  # Check for minimum terminal size (otherwise some dialogs would fail)
   lib_msg_dialog_autosize >/dev/null                                        && \
 
   # Show welcome message (but not in submenu mode)
@@ -2124,7 +2141,7 @@ menu_arg_action() {
 #  DESCRIPTION:  Main menu (interactive mode)
 #===============================================================================
 menu_main() {
-  # Check for minimum terminal size (otherwise some dialogues would fail)
+  # Check for minimum terminal size (otherwise some dialogs would fail)
   lib_msg_dialog_autosize >/dev/null                                        || \
   { sleep 3; return 1; }
 
@@ -3117,8 +3134,8 @@ menu_arg_device_dst() {
         }
       }                                                                     && \
 
-      # Dialogue 1: Show message box with detailed information about the block
-      #             devices
+      # Dialog #1: Show message box with detailed information about the block
+      #            devices
       msg="$(printf "%s\n\n%s\n%s\n%s\n%s"  \
                     "${text1}"              \
                     "=========="            \
@@ -3129,7 +3146,7 @@ menu_arg_device_dst() {
 
       dialog --no-collapse --title "${title1}" --msgbox "${msg}" 0 0        && \
 
-      # Dialogue 2: Request user to select one of the block devices
+      # Dialog #2: Request user to select one of the block devices
       IFS="${LIB_C_STR_NEWLINE}"                                            && \
       lsblk_menu="$(for a in ${lsblk_menu}; do
           name="$(printf "%s" "$a" | cut -d' ' -f2)"
@@ -3255,8 +3272,8 @@ menu_arg_device_src() {
         }
       }                                                                     && \
 
-      # Dialogue 1: Show message box with detailed information about the block
-      #             devices
+      # Dialog #1: Show message box with detailed information about the block
+      #            devices
       msg="$(printf "%s\n\n%s\n%s\n%s\n%s"  \
                     "${text1}"              \
                     "=========="            \
@@ -3267,7 +3284,7 @@ menu_arg_device_src() {
 
       dialog --no-collapse --title "${title1}" --msgbox "${msg}" 0 0        && \
 
-      # Dialogue 2: Request user to select one of the block devices
+      # Dialog #2: Request user to select one of the block devices
       IFS="${LIB_C_STR_NEWLINE}"                                            && \
       lsblk_menu="$(for a in ${lsblk_menu}; do
           name="$(printf "%s" "$a" | cut -d' ' -f2)"
@@ -3763,11 +3780,12 @@ menu_arg_tpm2_pcrs() {
         "${arg_tpm2_pcrs}" 2>&1 1>&3)"                                      || \
       exitcode="$?"
 
-      # Continue loop in case a wrong value was entered
-      if  lib_core_regex --luks2-tpm2-pcrs "${result}" || \
-          [ "${exitcode}" -ne 0 ]; then
-            break
-      fi
+      # Show prompt again if <result> is not valid unless the user has pressed
+      # the 'Cancel' button
+      case "${exitcode}" in
+        0) lib_regex --luks2-tpm2-pcrs "${result}" && break;;
+        *) break;;
+      esac
     done
   exec 3>&-
 
