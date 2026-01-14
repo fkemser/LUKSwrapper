@@ -106,7 +106,7 @@ chmod +x ./LUKSwrapper/src/luks.sh && \
 ./LUKSwrapper/src/luks.sh
 ```
 
-For more information please have a look at the [usage](#usage-srclukssh) section below.
+> :information_source: For more information please have a look at the [usage](#usage-srclukssh) section below.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -162,6 +162,7 @@ Packages | [coreutils (9.1-1)](https://packages.debian.org/bookworm/coreutils)
 
 <!-- GETTING STARTED -->
 ## Getting Started
+
 ### Prerequisites
 Please make sure that the following dependencies are installed:
 
@@ -177,6 +178,17 @@ Additionally, there are some use-case specific dependencies (see sections below)
 * [OpenSC (PKCS#11 module)](https://github.com/OpenSC/libp11)
 * [PCSClite](https://pcsclite.apdu.fr/)
 * [USB PC/SC CCID driver](https://ccid.apdu.fr/)
+
+Below you can find distribution-specific installation instructions.
+
+#### Debian
+```sh
+sudo apt install cryptsetup pv                      # Mandatory
+sudo apt install dialog                             # Interactive Mode (optional)
+sudo apt install libfido2-1                         # FIDO2 (optional)
+sudo apt install opensc-pkcs11 pcscd libccid        # PKCS#11 (optional)
+sudo apt install libtss2-esys-3.0.2-0 libtss2-rc0   # TPM2 (optional)
+```
 
 ### Mandatory
 ```
@@ -224,17 +236,6 @@ See also: https://github.com/shimunn/fido2luks/tree/master#theory-of-operation
 ````
 
 See also: https://manpages.debian.org/experimental/systemd/systemd-cryptenroll.1.en.html
-
-Below you can find distribution-specific installation instructions.
-
-#### Debian
-```sh
-sudo apt install cryptsetup pv                      # Required
-sudo apt install dialog                             # Interactive Mode (optional)
-sudo apt install libfido2-1                         # FIDO2 (optional)
-sudo apt install opensc-pkcs11 pcscd libccid        # PKCS#11 (optional)
-sudo apt install libtss2-esys-3.0.2-0 libtss2-rc0   # TPM2 (optional)
-```
 
 ### Installation
 
